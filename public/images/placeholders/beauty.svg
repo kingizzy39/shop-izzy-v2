@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" fill="#f6f1e4"/>
+  <ellipse cx="100" cy="100" rx="45" ry="60" fill="#e5dfd3" stroke="#d5ccc8" stroke-width="2"/>
+  <ellipse cx="100" cy="90" rx="35" ry="15" fill="#fdfbf5" stroke="#d5ccc8" stroke-width="1"/>
+  <rect x="90" y="60" width="20" height="40" rx="2" fill="#b8912f" opacity="0.8"/>
+  <ellipse cx="100" cy="135" rx="25" ry="8" fill="#fdfbf5" stroke="#d5ccc8" stroke-width="1"/>
+  <text x="100" y="185" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="#8a8a8a">Beauty</text>
+</svg>

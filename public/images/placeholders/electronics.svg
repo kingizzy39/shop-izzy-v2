@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" fill="#f6f1e4"/>
+  <rect x="30" y="50" width="140" height="100" rx="8" fill="#e5dfd3" stroke="#d5ccc8" stroke-width="2"/>
+  <rect x="40" y="60" width="120" height="80" rx="4" fill="#121212"/>
+  <circle cx="100" cy="100" r="25" fill="none" stroke="#b8912f" stroke-width="2"/>
+  <circle cx="100" cy="100" r="12" fill="#b8912f"/>
+  <rect x="85" y="160" width="30" height="4" rx="2" fill="#d5ccc8"/>
+  <text x="100" y="185" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="#8a8a8a">Headphones</text>
+</svg>

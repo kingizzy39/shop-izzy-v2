@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" fill="#f6f1e4"/>
+  <path d="M100 20 L170 70 L170 150 L30 150 L30 70 Z" fill="#e5dfd3" stroke="#d5ccc8" stroke-width="2"/>
+  <path d="M100 20 L30 70 L170 70 Z" fill="#fdfbf5" stroke="#d5ccc8" stroke-width="1"/>
+  <rect x="75" y="110" width="50" height="60" fill="#121212" stroke="#d5ccc8" stroke-width="1"/>
+  <rect x="85" y="120" width="30" height="25" fill="#b8912f"/>
+  <rect x="85" y="150" width="30" height="20" fill="#4a4a4a"/>
+  <text x="100" y="185" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="#8a8a8a">Home & Living</text>
+</svg>
