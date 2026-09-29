@@ -3,7 +3,6 @@ import {
   BrowserRouter,
   Routes,
   Route,
-  Navigate,
   useLocation,
   useNavigationType,
 } from "react-router-dom";
@@ -13,7 +12,6 @@ import AuthLayout from "./components/AuthLayout";
 import ProtectedRouteShopper from "./components/ProtectedRouteShopper";
 import ProtectedRouteSeller from "./components/ProtectedRouteSeller";
 import ScrollToTop from "./components/ScrollToTop";
-import { useIsShopperAuthenticated } from "./store/index";
 
 // Lazy-loaded route components
 const LandingPage = lazy(() => import("./routes/LandingPage"));
@@ -40,21 +38,6 @@ function RouteLoading() {
         <p className="text-structural/60">Loading...</p>
       </div>
     </div>
-  );
-}
-
-// Landing page redirect if authenticated
-function LandingPageWrapper() {
-  const isAuthenticated = useIsShopperAuthenticated();
-
-  if (isAuthenticated) {
-    return <Navigate to="/shop" replace />;
-  }
-
-  return (
-    <Suspense fallback={<RouteLoading />}>
-      <LandingPage />
-    </Suspense>
   );
 }
 
@@ -110,7 +93,8 @@ function App() {
           <Routes>
             {/* Public pages with full site layout */}
             <Route element={<Layout />}>
-              <Route path="/" element={<LandingPageWrapper />} />
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/shop" element={<Home />} />
               <Route path="/category" element={<CategoryListing />} />
               <Route path="/category/:cat" element={<CategoryListing />} />
               <Route path="/product/:id" element={<ProductDetail />} />
@@ -129,10 +113,9 @@ function App() {
               <Route path="/accessibility" element={<InfoPage />} />
             </Route>
 
-            {/* Shopper-protected routes with full site layout */}
+            {/* Shopper-protected routes (cart, checkout, wishlist, orders) */}
             <Route element={<ProtectedRouteShopper />}>
               <Route element={<Layout />}>
-                <Route path="/shop" element={<Home />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/wishlist" element={<Wishlist />} />
                 <Route path="/checkout" element={<Checkout />} />
@@ -143,7 +126,7 @@ function App() {
               </Route>
             </Route>
 
-            {/* Seller-protected routes with full site layout */}
+            {/* Seller-protected routes */}
             <Route element={<ProtectedRouteSeller />}>
               <Route element={<Layout />}>
                 <Route path="/seller/dashboard" element={<SellerDashboard />} />

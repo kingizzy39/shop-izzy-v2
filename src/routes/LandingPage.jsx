@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { PRODUCTS } from "../data";
-import { useIsShopperAuthenticated } from "../store/index";
 
 // Select 6 diverse products from different categories
 const FEATURED_PRODUCTS = [
@@ -400,16 +399,6 @@ const TrustIcon = ({ children, className = "" }) => (
 );
 
 const LandingPage = () => {
-  const navigate = useNavigate();
-  const isAuthenticated = useIsShopperAuthenticated();
-
-  // Redirect authenticated users to shop
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/shop", { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
-
   return (
     <div className="animate-fade-in min-h-screen bg-background">
       {/* ===== HERO SECTION ===== */}
