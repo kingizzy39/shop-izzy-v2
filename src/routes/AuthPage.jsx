@@ -668,11 +668,14 @@ const AuthPage = () => {
             <p className="text-xs text-structural/50">
               Your data is protected with bank-grade encryption. By{" "}
               {isLogin ? "signing in" : "signing up"}, you agree to our{" "}
-              <Link href="#" className="text-gradient-amber hover:underline">
+              <Link to="/terms" className="text-gradient-amber hover:underline">
                 Terms of Service
               </Link>{" "}
               and{" "}
-              <Link href="#" className="text-gradient-amber hover:underline">
+              <Link
+                to="/privacy"
+                className="text-gradient-amber hover:underline"
+              >
                 Privacy Policy
               </Link>
               .
