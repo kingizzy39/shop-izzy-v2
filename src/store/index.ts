@@ -141,6 +141,9 @@ interface StoreState {
   // Logout actions
   logoutShopper: () => void;
   logoutSeller: () => void;
+  // Hydration state for persist middleware
+  hasHydrated: boolean;
+  setHasHydrated: (hasHydrated: boolean) => void;
 }
 
 function isTokenValid(token: AuthToken | null): boolean {
@@ -297,10 +300,18 @@ export const useStore = create<StoreState>()(
       logoutSeller: () => {
         set({ sellerToken: null, seller: null, sellerProfile: null });
       },
+      // Hydration state for persist middleware
+      hasHydrated: false,
+      setHasHydrated: (hasHydrated: boolean) => set({ hasHydrated }),
     }),
     {
       name: "shop-izzy-storage",
       storage: safeStorage,
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.setHasHydrated(true);
+        }
+      },
     },
   ),
 );

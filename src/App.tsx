@@ -12,6 +12,7 @@ import Layout from "./components/Layout";
 import AuthLayout from "./components/AuthLayout";
 import ProtectedRouteShopper from "./components/ProtectedRouteShopper";
 import ProtectedRouteSeller from "./components/ProtectedRouteSeller";
+import ScrollToTop from "./components/ScrollToTop";
 import { useIsShopperAuthenticated } from "./store/index";
 
 // Lazy-loaded route components
@@ -79,6 +80,7 @@ function NavigationTracker() {
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Sentry.ErrorBoundary
         fallback={
           <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">

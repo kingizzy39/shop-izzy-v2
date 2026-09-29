@@ -125,18 +125,26 @@ const ProductDetail = () => {
       : product.rating; // Fallback to product's base rating
 
   // Generate dynamic thumbnail images using product keyword with different locks
+  // Include product's own img as first thumbnail if available
   const thumbnailImages = useMemo(() => {
-    if (!product.keyword) return [product.img];
-    const locks = [
-      product.lock,
-      product.lock + 10,
-      product.lock + 20,
-      product.lock + 30,
-    ];
-    return locks.map(
-      (lock) =>
-        `https://loremflickr.com/200/200/${product.keyword}/all?lock=${lock}`,
-    );
+    const images: string[] = [];
+    if (product.img) {
+      images.push(product.img);
+    }
+    if (product.keyword) {
+      const locks = [
+        product.lock,
+        product.lock + 10,
+        product.lock + 20,
+        product.lock + 30,
+      ];
+      locks.forEach((lock) => {
+        images.push(
+          `https://loremflickr.com/200/200/${product.keyword}/all?lock=${lock}`,
+        );
+      });
+    }
+    return images.length > 0 ? images : [product.img || ""];
   }, [product]);
 
   // Generate dynamic color swatches based on product category
@@ -252,9 +260,11 @@ const ProductDetail = () => {
             <div className="relative aspect-square rounded-2xl overflow-hidden bg-background-elevated">
               <ImageWithFallback
                 product={{
+                  id: product.id,
                   keyword: product.keyword,
                   lock: product.lock,
                   cat: product.cat,
+                  img: product.img,
                 }}
                 alt={product.name}
                 className="w-full h-full object-cover transition-opacity duration-300"
@@ -325,6 +335,7 @@ const ProductDetail = () => {
                   >
                     <ImageWithFallback
                       product={{
+                        id: product.id,
                         keyword: product.keyword,
                         lock: thumbLock,
                         cat: product.cat,

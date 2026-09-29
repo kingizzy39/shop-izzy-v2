@@ -1,6 +1,6 @@
 # CLAUDE Memory — shop-izzy-v2
 
-> Updated: 2026-09-29 (Session 2: Fixed Wishlist, Footer links, Newsletter, Code-splitting, Removed dead code)
+> Updated: 2026-09-29 (Session 3: Fixed Product Image Mapping, ScrollToTop Verification, Shop Blank Screen on Auth Redirect)
 
 ---
 
@@ -59,12 +59,14 @@
 - **Info pages** — reusable InfoPage component for all footer informational routes
 - **Code-splitting** — React.lazy + Suspense on all routes, main bundle ~945KB with 20 route chunks
 - **Removed dead code** — deleted unused API layer, MSW mocks, duplicate route files (SellerDashboard.jsx, SellerJoin.jsx, LoginPage.jsx, SignupPage.jsx)
+- **Product image fallback chain** — reordered to prioritize Unsplash (reliable CDN) over LoremFlickr (unreliable), local SVG placeholders as guaranteed fallback
+- **ScrollToTop on route change** — verified working: `src/components/ScrollToTop.jsx` mounted in App.tsx, scrolls to top instantly on pathname/hash change
+- **Shop page blank screen fix** — added hydration wait (`hasHydrated`), loading spinner, auth safety check in Home.tsx to prevent blank screen after sign-up redirect
 
 ---
 
 ## 4. What Didn't Work (Current Blockers)
 
-- **loremflickr.com** — unreliable fallback image source (has local SVG placeholders as last resort, loremflickr disabled in config)
 - **Seller product image upload** — fake file input, no actual upload implementation
 
 ---
@@ -106,7 +108,7 @@
 
 ### P2 — Medium (Feature Completeness)
 
-- [ ] Replace `loremflickr.com` fallback with reliable source or local-only images (disabled in config, local placeholders work)
+- [x] Replace `loremflickr.com` fallback with reliable source — **DONE** (reordered fallback chain: Unsplash primary → LoremFlickr secondary → local SVG guaranteed)
 - [ ] Implement real seller product image upload (or document as mock)
 
 ### P3 — Low (Polish)
@@ -124,6 +126,9 @@
 - [x] Implement Checkout page — shipping, payment, order confirmation (with OrderSuccess page)
 - [x] Implement image solution — curated Unsplash photos + SVG fallbacks (all products have images)
 - [x] Fix Unsplash image URLs — corrected buildUnsplashUrl, verified all 55 product photos + category fallbacks return 200
+- [x] **Reorder image fallback chain** — Unsplash primary (reliable CDN) → LoremFlickr secondary → local SVG guaranteed fallback
+- [x] **Verify ScrollToTop on route change** — already implemented in ScrollToTop.jsx, mounted in App.tsx
+- [x] **Fix shop page blank screen after auth redirect** — added hydration wait, loading state, auth safety check in Home.tsx
 - [x] Implement Seller Join page — 5-step onboarding form (Business Info, Personal Info, Bank Details, Verification, Review)
 - [x] Implement Seller Login page — email/password authentication with mock login
 - [x] Implement Seller Dashboard — Overview (stats, recent orders), Products (CRUD with modal), Orders (table with status), Settings (business info, bank details)

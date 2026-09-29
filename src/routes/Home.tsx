@@ -1,21 +1,86 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useStore, useAllProducts } from "../store/index";
+import {
+  useStore,
+  useAllProducts,
+  useIsShopperAuthenticated,
+} from "../store/index";
+import type { Product } from "../data";
 import ProductCard from "../components/ProductCard";
+import ErrorBoundary from "../components/ErrorBoundary";
 
-const Home = () => {
-  const { categories, sellerProducts } = useStore();
+// Safe array helper to ensure we always have an array
+const safeArray = <T,>(arr: T[] | null | undefined): T[] =>
+  Array.isArray(arr) ? arr : [];
+
+const HomeContent = () => {
+  const { categories, sellerProducts, hasHydrated } = useStore();
   const allProducts = useAllProducts();
+  const isAuthenticated = useIsShopperAuthenticated();
+  const [isReady, setIsReady] = useState(false);
+
+  // Ensure allProducts is always an array
+  const products = safeArray(allProducts);
+  const sellerProdsArray = safeArray(sellerProducts);
+
+  // Wait for store hydration and auth check to complete
+  useEffect(() => {
+    if (hasHydrated) {
+      setIsReady(true);
+    }
+  }, [hasHydrated]);
+
+  // Show loading while store is hydrating
+  if (!isReady) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-10 w-10 animate-spin rounded-full border-3 border-gradient-amber border-t-transparent" />
+          <p className="text-structural/60">Loading shop...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // This should not happen due to ProtectedRouteShopper, but safety check
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <div className="card-premium p-8 text-center max-w-md w-full animate-fade-in">
+          <svg
+            className="h-16 w-16 mx-auto text-rose-500 mb-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+          </svg>
+          <h1 className="font-display text-2xl font-bold text-structural mb-3">
+            Authentication Required
+          </h1>
+          <p className="text-structural/60 mb-6">
+            Please sign in to access the shop.
+          </p>
+          <Link to="/login" className="btn-primary inline-block">
+            Sign In
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   // Featured product sets (for demo, we'll use some products from each category)
-  const featuredThisWeeksEdit = useMemo(() => allProducts.slice(0, 4), [allProducts]);
+  const featuredThisWeeksEdit = useMemo(() => products.slice(0, 4), [products]);
   const featuredFashionFavourites = useMemo(
-    () => allProducts.filter((p) => p.cat === "fashion").slice(0, 4),
-    [allProducts],
+    () => products.filter((p) => p.cat === "fashion").slice(0, 4),
+    [products],
   );
   const featuredElectronicsWorthUpgrade = useMemo(
-    () => allProducts.filter((p) => p.cat === "electronics").slice(0, 4),
-    [allProducts],
+    () => products.filter((p) => p.cat === "electronics").slice(0, 4),
+    [products],
   );
 
   return (
@@ -56,7 +121,10 @@ const Home = () => {
         {/* Decorative elements */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-1/4 left-10 w-72 h-72 bg-gradient-amber/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute top-1/4 right-10 w-72 h-72 bg-gradient-terracotta/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "500ms" }} />
+          <div
+            className="absolute top-1/4 right-10 w-72 h-72 bg-gradient-terracotta/10 rounded-full blur-3xl animate-pulse"
+            style={{ animationDelay: "500ms" }}
+          />
           <div
             className="absolute bottom-1/4 right-10 w-96 h-96 bg-gradient-amber/5 rounded-full blur-3xl animate-pulse"
             style={{ animationDelay: "1s" }}
@@ -142,6 +210,9 @@ const Home = () => {
                   src={category.img}
                   alt={category.name}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  onError={(e) => {
+                    e.currentTarget.src = `/images/placeholders/${category.id}.svg`;
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-structural-deep/90 via-structural/30 to-transparent flex flex-col items-center justify-end p-6">
                   <h3 className="font-display text-lg sm:text-xl font-bold text-background mb-1">
@@ -152,7 +223,10 @@ const Home = () => {
                   </p>
                 </div>
                 {/* Accent bar */}
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-terracotta opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ animationDelay: `${index * 50}ms` }} />
+                <div
+                  className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-terracotta opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                />
               </Link>
             ))}
           </div>
@@ -190,7 +264,7 @@ const Home = () => {
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredThisWeeksEdit.map((product) => (
+              {featuredThisWeeksEdit.map((product: Product) => (
                 <ProductCard key={product.id} product={product} showRating />
               ))}
             </div>
@@ -252,7 +326,7 @@ const Home = () => {
       </section>
 
       {/* Seller Spotlight */}
-      {sellerProducts.length > 0 && (
+      {sellerProdsArray.length > 0 && (
         <section className="section-premium">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
@@ -264,7 +338,7 @@ const Home = () => {
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sellerProducts.map((product) => (
+              {sellerProdsArray.map((product: Product) => (
                 <ProductCard
                   key={product.id}
                   product={product}
@@ -304,5 +378,11 @@ const Home = () => {
     </div>
   );
 };
+
+const Home = () => (
+  <ErrorBoundary>
+    <HomeContent />
+  </ErrorBoundary>
+);
 
 export default Home;
