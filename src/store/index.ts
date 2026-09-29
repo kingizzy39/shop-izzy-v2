@@ -133,7 +133,11 @@ interface StoreState {
   isSellerAuthenticated: () => boolean;
   // Get current user/seller from tokens
   getCurrentShopper: () => { name: string; email: string } | null;
-  getCurrentSeller: () => { name: string; email: string; storeName: string } | null;
+  getCurrentSeller: () => {
+    name: string;
+    email: string;
+    storeName: string;
+  } | null;
   // Logout actions
   logoutShopper: () => void;
   logoutSeller: () => void;
@@ -273,7 +277,8 @@ export const useStore = create<StoreState>()(
       setShopperToken: (token) => set({ shopperToken: token }),
       setSellerToken: (token) => set({ sellerToken: token }),
       clearShopperToken: () => set({ shopperToken: null, user: null }),
-      clearSellerToken: () => set({ sellerToken: null, seller: null, sellerProfile: null }),
+      clearSellerToken: () =>
+        set({ sellerToken: null, seller: null, sellerProfile: null }),
       isShopperAuthenticated: () => isTokenValid(get().shopperToken),
       isSellerAuthenticated: () => isTokenValid(get().sellerToken),
       getCurrentShopper: () => {
@@ -307,7 +312,9 @@ export const useStore = create<StoreState>()(
  * Get cart item count - only re-renders when cart changes
  */
 export const useCartItemCount = () =>
-  useStore((state) => Object.values(state.cart).reduce((sum, qty) => sum + qty, 0));
+  useStore((state) =>
+    Object.values(state.cart).reduce((sum, qty) => sum + qty, 0),
+  );
 
 /**
  * Get wishlist item count - only re-renders when wishlist changes
@@ -348,8 +355,7 @@ export const useCurrentSeller = () =>
 /**
  * Get cart - only re-renders when cart changes
  */
-export const useCart = () =>
-  useStore((state) => state.cart);
+export const useCart = () => useStore((state) => state.cart);
 
 /**
  * Get cart actions - only re-renders when cart actions change (never, they're stable)
@@ -363,6 +369,11 @@ export const useCartActions = () =>
   }));
 
 /**
+ * Get wishlist - only re-renders when wishlist changes
+ */
+export const useWishlist = () => useStore((state) => state.wishlist);
+
+/**
  * Get wishlist actions - only re-renders when wishlist actions change (never, they're stable)
  */
 export const useWishlistActions = () =>
@@ -374,8 +385,7 @@ export const useWishlistActions = () =>
 /**
  * Get products - only re-renders when products change
  */
-export const useProducts = () =>
-  useStore((state) => state.products);
+export const useProducts = () => useStore((state) => state.products);
 
 /**
  * Get seller products - only re-renders when sellerProducts change
@@ -386,14 +396,12 @@ export const useSellerProducts = () =>
 /**
  * Get clearCart action - stable reference
  */
-export const useClearCart = () =>
-  useStore((state) => state.clearCart);
+export const useClearCart = () => useStore((state) => state.clearCart);
 
 /**
  * Get seller profile - only re-renders when sellerProfile changes
  */
-export const useSellerProfile = () =>
-  useStore((state) => state.sellerProfile);
+export const useSellerProfile = () => useStore((state) => state.sellerProfile);
 
 /**
  * Get seller product actions - stable references
@@ -414,5 +422,4 @@ export const useClearSellerProfile = () =>
 /**
  * Get logoutSeller action - stable reference
  */
-export const useLogoutSeller = () =>
-  useStore((state) => state.logoutSeller);
+export const useLogoutSeller = () => useStore((state) => state.logoutSeller);

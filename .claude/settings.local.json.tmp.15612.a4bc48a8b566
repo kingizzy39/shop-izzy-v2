@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(pkill -f \"vite\")",
+      "Bash(curl -s http://localhost:5173/cart)",
+      "Bash(npm install *)",
+      "Bash(npx prettier *)",
+      "Bash(curl -s http://localhost:5173/checkout)",
+      "Bash(curl -sI \"https://loremflickr.com/200/200/headphones,wireless/all?lock=1\")",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(curl -sI \"https://loremflickr.com/200/200/headphones,wireless/all?lock=1&api_key=demo\")",
+      "Bash(curl -s http://localhost:5173/src/main.tsx)",
+      "Bash(curl -s http://localhost:5173/src/components/ImageWithFallback.tsx)",
+      "Bash(curl -sI \"https://picsum.photos/400/400?random=1\")",
+      "Bash(curl -sI \"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop\")",
+      "Bash(curl -sI \"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop\")",
+      "Bash(curl -sI \"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop&auto=format&q=80\")",
+      "Bash(curl -s http://localhost:5173/src/utils/unsplash-images.ts)",
+      "Bash(curl *)",
+      "Read(//tmp/**)",
+      "Bash(npx tsc *)",
+      "Bash(npm test *)",
+      "Bash(npx eslint *)",
+      "Bash(git add *)"
+    ]
+  }
+}

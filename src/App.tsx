@@ -1,23 +1,46 @@
-import React from "react";
-import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigationType } from "react-router-dom";
+import React, { Suspense, lazy } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+  useNavigationType,
+} from "react-router-dom";
 import * as Sentry from "@sentry/react";
 import Layout from "./components/Layout";
 import AuthLayout from "./components/AuthLayout";
 import ProtectedRouteShopper from "./components/ProtectedRouteShopper";
 import ProtectedRouteSeller from "./components/ProtectedRouteSeller";
-import LandingPage from "./routes/LandingPage";
-import Home from "./routes/Home";
-import CategoryListing from "./routes/CategoryListing";
-import ProductDetail from "./routes/ProductDetail";
-import Cart from "./routes/Cart";
-import Checkout from "./routes/Checkout";
-import OrderSuccess from "./routes/OrderSuccess";
-import AuthPage from "./routes/AuthPage";
-import SellerJoinPage from "./routes/SellerJoinPage";
-import SellerLogin from "./routes/SellerLogin";
-import SellerDashboard from "./routes/SellerDashboard";
-import SearchResults from "./routes/SearchResults";
 import { useIsShopperAuthenticated } from "./store/index";
+
+// Lazy-loaded route components
+const LandingPage = lazy(() => import("./routes/LandingPage"));
+const Home = lazy(() => import("./routes/Home"));
+const CategoryListing = lazy(() => import("./routes/CategoryListing"));
+const ProductDetail = lazy(() => import("./routes/ProductDetail"));
+const Cart = lazy(() => import("./routes/Cart"));
+const Checkout = lazy(() => import("./routes/Checkout"));
+const OrderSuccess = lazy(() => import("./routes/OrderSuccess"));
+const AuthPage = lazy(() => import("./routes/AuthPage"));
+const SellerJoinPage = lazy(() => import("./routes/SellerJoinPage"));
+const SellerLogin = lazy(() => import("./routes/SellerLogin"));
+const SellerDashboard = lazy(() => import("./routes/SellerDashboardPage"));
+const SearchResults = lazy(() => import("./routes/SearchResults"));
+const Wishlist = lazy(() => import("./routes/Wishlist"));
+const InfoPage = lazy(() => import("./routes/InfoPage"));
+
+// Loading fallback component
+function RouteLoading() {
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="h-10 w-10 animate-spin rounded-full border-3 border-gradient-amber border-t-transparent" />
+        <p className="text-structural/60">Loading...</p>
+      </div>
+    </div>
+  );
+}
 
 // Landing page redirect if authenticated
 function LandingPageWrapper() {
@@ -27,7 +50,11 @@ function LandingPageWrapper() {
     return <Navigate to="/shop" replace />;
   }
 
-  return <LandingPage />;
+  return (
+    <Suspense fallback={<RouteLoading />}>
+      <LandingPage />
+    </Suspense>
+  );
 }
 
 // Navigation tracking component for PostHog page views
@@ -56,9 +83,12 @@ function App() {
         fallback={
           <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
             <div className="max-w-md w-full text-center">
-              <h1 className="text-2xl font-bold text-gray-900 mb-4">Something went wrong</h1>
+              <h1 className="text-2xl font-bold text-gray-900 mb-4">
+                Something went wrong
+              </h1>
               <p className="text-gray-600 mb-6">
-                We're sorry, but an unexpected error occurred. Our team has been notified.
+                We're sorry, but an unexpected error occurred. Our team has been
+                notified.
               </p>
               <button
                 onClick={() => window.location.reload()}
@@ -74,41 +104,59 @@ function App() {
         }}
       >
         <NavigationTracker />
-        <Routes>
-          {/* Public pages with full site layout */}
-          <Route element={<Layout />}>
-            <Route path="/" element={<LandingPageWrapper />} />
-            <Route path="/category" element={<CategoryListing />} />
-            <Route path="/category/:cat" element={<CategoryListing />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/search" element={<SearchResults />} />
-          </Route>
-
-          {/* Shopper-protected routes with full site layout */}
-          <Route element={<ProtectedRouteShopper />}>
+        <Suspense fallback={<RouteLoading />}>
+          <Routes>
+            {/* Public pages with full site layout */}
             <Route element={<Layout />}>
-              <Route path="/shop" element={<Home />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/order-success/:orderId" element={<OrderSuccess />} />
+              <Route path="/" element={<LandingPageWrapper />} />
+              <Route path="/category" element={<CategoryListing />} />
+              <Route path="/category/:cat" element={<CategoryListing />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/search" element={<SearchResults />} />
+              <Route path="/about" element={<InfoPage />} />
+              <Route path="/careers" element={<InfoPage />} />
+              <Route path="/press" element={<InfoPage />} />
+              <Route path="/sustainability" element={<InfoPage />} />
+              <Route path="/help" element={<InfoPage />} />
+              <Route path="/returns" element={<InfoPage />} />
+              <Route path="/contact" element={<InfoPage />} />
+              <Route path="/faqs" element={<InfoPage />} />
+              <Route path="/privacy" element={<InfoPage />} />
+              <Route path="/terms" element={<InfoPage />} />
+              <Route path="/cookies" element={<InfoPage />} />
+              <Route path="/accessibility" element={<InfoPage />} />
             </Route>
-          </Route>
 
-          {/* Seller-protected routes with full site layout */}
-          <Route element={<ProtectedRouteSeller />}>
-            <Route element={<Layout />}>
-              <Route path="/seller/dashboard" element={<SellerDashboard />} />
+            {/* Shopper-protected routes with full site layout */}
+            <Route element={<ProtectedRouteShopper />}>
+              <Route element={<Layout />}>
+                <Route path="/shop" element={<Home />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route
+                  path="/order-success/:orderId"
+                  element={<OrderSuccess />}
+                />
+              </Route>
             </Route>
-          </Route>
 
-          {/* Auth pages with clean layout (no header/footer/utility bar) */}
-          <Route element={<AuthLayout />}>
-            <Route path="/login" element={<AuthPage />} />
-            <Route path="/signup" element={<AuthPage />} />
-            <Route path="/seller/join" element={<SellerJoinPage />} />
-            <Route path="/seller/login" element={<SellerLogin />} />
-          </Route>
-        </Routes>
+            {/* Seller-protected routes with full site layout */}
+            <Route element={<ProtectedRouteSeller />}>
+              <Route element={<Layout />}>
+                <Route path="/seller/dashboard" element={<SellerDashboard />} />
+              </Route>
+            </Route>
+
+            {/* Auth pages with clean layout (no header/footer/utility bar) */}
+            <Route element={<AuthLayout />}>
+              <Route path="/login" element={<AuthPage />} />
+              <Route path="/signup" element={<AuthPage />} />
+              <Route path="/seller/join" element={<SellerJoinPage />} />
+              <Route path="/seller/login" element={<SellerLogin />} />
+            </Route>
+          </Routes>
+        </Suspense>
       </Sentry.ErrorBoundary>
     </BrowserRouter>
   );

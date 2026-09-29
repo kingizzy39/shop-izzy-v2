@@ -4,21 +4,22 @@ import Button from "./Button";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [newsletterStatus, setNewsletterStatus] = React.useState("idle"); // idle, submitting, success, error
 
   const footerLinks = {
     about: [
-      { label: "About us", href: "#" },
-      { label: "Careers", href: "#" },
+      { label: "About us", href: "/about" },
+      { label: "Careers", href: "/careers" },
       { label: "Sell on Shop Izzy", href: "/seller/join" },
-      { label: "Press", href: "#" },
-      { label: "Sustainability", href: "#" },
+      { label: "Press", href: "/press" },
+      { label: "Sustainability", href: "/sustainability" },
     ],
     customerService: [
-      { label: "Help centre", href: "#" },
+      { label: "Help centre", href: "/help" },
       { label: "Track my order", href: "/cart" },
-      { label: "Returns & refunds", href: "#" },
-      { label: "Contact us", href: "#" },
-      { label: "FAQs", href: "#" },
+      { label: "Returns & refunds", href: "/returns" },
+      { label: "Contact us", href: "/contact" },
+      { label: "FAQs", href: "/faqs" },
     ],
     categories: [
       { label: "Phones & Tablets", href: "/category?cat=phones" },
@@ -29,17 +30,17 @@ const Footer = () => {
       { label: "Supermarket", href: "/category?cat=grocery" },
     ],
     legal: [
-      { label: "Privacy policy", href: "#" },
-      { label: "Terms of service", href: "#" },
-      { label: "Cookie policy", href: "#" },
-      { label: "Accessibility", href: "#" },
+      { label: "Privacy policy", href: "/privacy" },
+      { label: "Terms of service", href: "/terms" },
+      { label: "Cookie policy", href: "/cookies" },
+      { label: "Accessibility", href: "/accessibility" },
     ],
   };
 
   const socialLinks = [
     {
       name: "Instagram",
-      href: "#",
+      href: "https://instagram.com/shopizzy",
       icon: (
         <svg
           className="h-5 w-5"
@@ -56,7 +57,7 @@ const Footer = () => {
     },
     {
       name: "Twitter",
-      href: "#",
+      href: "https://twitter.com/shopizzy",
       icon: (
         <svg
           className="h-5 w-5"
@@ -71,7 +72,7 @@ const Footer = () => {
     },
     {
       name: "Facebook",
-      href: "#",
+      href: "https://facebook.com/shopizzy",
       icon: (
         <svg
           className="h-5 w-5"
@@ -86,7 +87,7 @@ const Footer = () => {
     },
     {
       name: "YouTube",
-      href: "#",
+      href: "https://youtube.com/@shopizzy",
       icon: (
         <svg
           className="h-5 w-5"
@@ -204,23 +205,78 @@ const Footer = () => {
               Sign up for early access to new drops, price changes, and
               exclusive offers.
             </p>
-            <form className="flex gap-2" onSubmit={(e) => e.preventDefault()}>
+            <form
+              className="flex gap-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const email = formData.get("email");
+                if (email) {
+                  setNewsletterStatus("submitting");
+                  // Simulate API call
+                  setTimeout(() => {
+                    setNewsletterStatus("success");
+                    e.currentTarget.reset();
+                    setTimeout(() => setNewsletterStatus("idle"), 5000);
+                  }, 1000);
+                }
+              }}
+            >
               <label htmlFor="footer-email" className="sr-only">
                 Email address
               </label>
               <input
                 id="footer-email"
+                name="email"
                 type="email"
                 placeholder="Enter your email"
                 className="input-premium flex-1"
                 required
+                disabled={newsletterStatus === "submitting"}
               />
-              <Button type="submit" variant="primary" size="md">
-                Subscribe
+              <Button
+                type="submit"
+                variant="primary"
+                size="md"
+                disabled={newsletterStatus === "submitting"}
+              >
+                {newsletterStatus === "submitting" ? (
+                  <>
+                    <svg
+                      className="h-5 w-5 mr-2 animate-spin"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                    </svg>
+                    Subscribing...
+                  </>
+                ) : (
+                  "Subscribe"
+                )}
               </Button>
             </form>
+            {newsletterStatus === "success" && (
+              <p className="text-sm text-green-600 mt-3 animate-fade-in">
+                Thanks for subscribing! Check your email for confirmation.
+              </p>
+            )}
+            {newsletterStatus === "error" && (
+              <p className="text-sm text-rose-600 mt-3 animate-fade-in">
+                Something went wrong. Please try again.
+              </p>
+            )}
             <p className="text-xs text-structural/50 mt-3">
-              By subscribing, you agree to our Privacy Policy.
+              By subscribing, you agree to our{" "}
+              <Link
+                to="/privacy"
+                className="text-gradient-amber hover:underline"
+              >
+                Privacy Policy
+              </Link>
+              .
             </p>
           </div>
         </div>

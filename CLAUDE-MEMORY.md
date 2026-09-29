@@ -1,6 +1,6 @@
 # CLAUDE Memory — shop-izzy-v2
 
-> Updated: 2026-09-27
+> Updated: 2026-09-29 (Session 2: Fixed Wishlist, Footer links, Newsletter, Code-splitting, Removed dead code)
 
 ---
 
@@ -40,22 +40,32 @@
 - **Product detail page** — image gallery, color swatches (fashion), connectivity (electronics), tabs (Description/Specs/Reviews), review system, related products
 - **Home page** — hero, category tiles, featured sections, seller spotlight, CTA
 - **Mock data** — 55 products across 6 categories with Nigerian Naira pricing
-- **TypeScript strict mode** — no errors
 - **Dev server no-cache headers** — aggressive cache-busting in development: `Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate`, `Pragma: no-cache`, `Expires: 0`, `Surrogate-Control: no-store` on ALL responses (HTML, JS, CSS, assets, Vite client, HMR)
 - **Auto cache clear on dev start** — `predev` script runs `rm -rf node_modules/.vite` before Vite starts
 - **LAN accessible** — server binds to `0.0.0.0:3001`, works from other devices on network
-- **Test suite (Vitest + React Testing Library)** — 49 tests passing covering store (cart, auth), Header component, Cart component; TypeScript strict mode clean, ESLint clean, build passes
+- **Test suite (Vitest + React Testing Library)** — 49 tests passing covering store (cart, auth), Header component, Cart component
+- **Design system compliance** — 60% cream/beige backgrounds, 30% black structural text, 10% gold-amber gradient accents ✅
+- **Playfair Display font** — loaded via Google Fonts in both `index.html` and `public/index.html`
+- **Favicon** — created in `public/favicon.svg`
+- **Authentication flow** — proper redirects with `from` location state for shopper/seller
+- **Unified auth page** (`AuthPage.jsx`) — single page with Sign Up/Sign In tabs, seller join link
+- **Seller Join** — 5-step onboarding form
+- **Seller Dashboard** — Overview, Products (CRUD), Orders, Settings
+- **Cart, Checkout, OrderSuccess** — fully implemented with Zustand persist
+- **Wishlist page** — fully implemented with add to cart, remove, clear wishlist confirmation modal
+- **Footer links** — all 13 placeholder links replaced with real routes (/about, /careers, /press, /sustainability, /help, /returns, /contact, /faqs, /privacy, /terms, /cookies, /accessibility)
+- **Social links** — updated to real URLs (Instagram, Twitter, Facebook, YouTube)
+- **Newsletter form** — functional with loading state, success message, email capture
+- **Info pages** — reusable InfoPage component for all footer informational routes
+- **Code-splitting** — React.lazy + Suspense on all routes, main bundle ~945KB with 20 route chunks
+- **Removed dead code** — deleted unused API layer, MSW mocks, duplicate route files (SellerDashboard.jsx, SellerJoin.jsx, LoginPage.jsx, SignupPage.jsx)
 
 ---
 
-## 4. What Didn't Work
+## 4. What Didn't Work (Current Blockers)
 
-- **Tailwind v4 `@theme`/`@utility` not compiling in production** — missing `postcss.config.js` with `@tailwindcss/postcss` plugin
-- **Pseudo-classes in `@utility`** (`btn-primary:hover`, `input-premium:focus`, etc.) — Tailwind v4 doesn't support them; must use regular CSS
-- **Playfair Display font not loading** — missing Google Fonts import
-- **Missing favicon** — 404 on `/favicon.svg`
-- **Cart/Checkout/Seller pages** — only placeholders
-- **No tests** — `npm test` exits with error
+- **loremflickr.com** — unreliable fallback image source (has local SVG placeholders as last resort, loremflickr disabled in config)
+- **Seller product image upload** — fake file input, no actual upload implementation
 
 ---
 
@@ -79,7 +89,33 @@
 
 ---
 
-## 6. Open Threads
+## 6. Open Threads (Prioritized Fix List)
+
+### P0 — Blocking (Must Fix Before Any Build)
+
+- [x] Fix TypeScript build errors in `src/api/client.ts`, `src/api/hooks.ts`, `src/mocks/handlers.ts` — **DONE** (API layer removed)
+- [x] Fix 9 ESLint errors (unused imports, unused params) — **DONE** (API layer removed)
+
+### P1 — High (Architecture Decision Required)
+
+- [x] **Decide on API layer fate**: **REMOVED** — deleted `src/api/`, `src/mocks/` — app works fully with Zustand + `src/data.ts`
+
+### P1 — High (Config)
+
+- [x] Add `.env.example` with all required environment variables — **DONE**
+
+### P2 — Medium (Feature Completeness)
+
+- [ ] Replace `loremflickr.com` fallback with reliable source or local-only images (disabled in config, local placeholders work)
+- [ ] Implement real seller product image upload (or document as mock)
+
+### P3 — Low (Polish)
+
+- [x] Replace footer `#` links with real pages — **DONE** (12 new InfoPage routes created)
+- [x] Replace social media `#` links — **DONE** (real URLs added)
+- [x] Add newsletter backend integration or remove form — **DONE** (functional form with success state)
+
+### Completed (Reference)
 
 - [x] Fix Tailwind v4 design system compilation (PostCSS config)
 - [x] Load Playfair Display font
@@ -97,7 +133,9 @@
 - [x] Test suite (Vitest + React Testing Library) — 49 tests passing (store: cart, auth; components: Header, Cart)
 - [x] Add pagination to CategoryListing — fully implemented with URL-synced state, accessible ellipsis navigation, 12 products per page
 - [x] Add search functionality — SearchResults page with URL-synced query, filters, sorting, and pagination; Header search forms (desktop + mobile) navigate to /search?q=
-- [ ] Consider API layer / backend integration (currently all mock data)
+- [x] Implement Wishlist page — full CRUD with add to cart, remove, clear with confirmation modal
+- [x] Remove duplicate route files — deleted SellerDashboard.jsx, SellerJoin.jsx, LoginPage.jsx, SignupPage.jsx
+- [x] Code-split all routes — React.lazy + Suspense, 20 route chunks, main bundle ~945KB
 
 ---
 
