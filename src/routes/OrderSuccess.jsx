@@ -234,11 +234,7 @@ const OrderSuccess = () => {
                       className="flex items-center gap-4 p-4 bg-background-muted/50 rounded-lg"
                     >
                       <ImageWithFallback
-                        product={{
-                          keyword: item.product.keyword,
-                          lock: item.product.lock,
-                          cat: item.product.cat,
-                        }}
+                        product={item.product}
                         alt={item.product.name}
                         className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
                         loading="lazy"
@@ -385,7 +381,7 @@ const OrderSuccess = () => {
                   about your order.
                 </p>
                 <div className="space-y-3">
-                  <Link
+                  <a
                     href="mailto:support@shopizzy.com"
                     className="flex items-center gap-3 p-3 rounded-lg bg-background-muted border border-border hover:border-gradient-amber transition-colors"
                   >
@@ -407,8 +403,8 @@ const OrderSuccess = () => {
                         support@shopizzy.com
                       </p>
                     </div>
-                  </Link>
-                  <Link
+                  </a>
+                  <a
                     href="tel:+2348001234567"
                     className="flex items-center gap-3 p-3 rounded-lg bg-background-muted border border-border hover:border-gradient-amber transition-colors"
                   >
@@ -429,7 +425,7 @@ const OrderSuccess = () => {
                         +234 800 123 4567
                       </p>
                     </div>
-                  </Link>
+                  </a>
                   <Link
                     href="/faq"
                     className="flex items-center gap-3 p-3 rounded-lg bg-background-muted border border-border hover:border-gradient-amber transition-colors"

@@ -45,22 +45,21 @@ const SearchResults = () => {
     return Math.max(1, parseInt(searchParams.get("page")) || 1);
   });
 
+  // Mobile filter drawer state
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
   // Sync filters with URL when they change
   useEffect(() => {
-    const newParams = new URLSearchParams(searchParams);
+    const newParams = new URLSearchParams();
 
     // Search query
     if (query) {
       newParams.set("q", query);
-    } else {
-      newParams.delete("q");
     }
 
     // Categories
     if (filters.categories.size > 0) {
       filters.categories.forEach((cat) => newParams.append("category", cat));
-    } else {
-      newParams.delete("category");
     }
 
     // Price
@@ -70,8 +69,6 @@ const SearchResults = () => {
     // Ratings
     if (filters.ratings.size > 0) {
       filters.ratings.forEach((rating) => newParams.append("rating", rating));
-    } else {
-      newParams.delete("rating");
     }
 
     // In stock
@@ -85,31 +82,47 @@ const SearchResults = () => {
 
     setSearchParams(newParams);
     setPage(1);
-  }, [filters, sort, query, searchParams, setSearchParams]);
+  }, [filters, sort, query, setSearchParams]);
 
   // Prepare filters for pagination
   const paginationFilters = useMemo(
     () => ({
-      category: filters.categories.size === 1 ? Array.from(filters.categories)[0] : undefined,
+      category:
+        filters.categories.size === 1
+          ? Array.from(filters.categories)[0]
+          : undefined,
       minPrice: filters.minPrice,
       maxPrice: filters.maxPrice,
-      minRating: filters.ratings.size > 0 ? Math.min(...Array.from(filters.ratings).map(Number)) : undefined,
+      minRating:
+        filters.ratings.size > 0
+          ? Math.min(...Array.from(filters.ratings).map(Number))
+          : undefined,
       sort,
     }),
-    [filters, sort]
+    [filters, sort],
   );
 
   // Search products
   const searchedProducts = useMemo(
     () => searchProducts(products, query, paginationFilters),
-    [products, query, paginationFilters]
+    [products, query, paginationFilters],
   );
 
   // Get paginated products
-  const { products: paginatedProducts, total, totalPages } = useMemo(
+  const {
+    products: paginatedProducts,
+    total,
+    totalPages,
+  } = useMemo(
     () =>
-      getProductsPaginated(searchedProducts, null, page, PRODUCTS_PER_PAGE, paginationFilters),
-    [searchedProducts, page, paginationFilters]
+      getProductsPaginated(
+        searchedProducts,
+        null,
+        page,
+        PRODUCTS_PER_PAGE,
+        paginationFilters,
+      ),
+    [searchedProducts, page, paginationFilters],
   );
 
   // Sort products (already sorted by searchProducts, but keep for consistency)
@@ -158,7 +171,9 @@ const SearchResults = () => {
 
   // Get unique ratings for filter checkboxes
   const uniqueRatings = useMemo(() => {
-    return [...new Set(searchedProducts.map((p) => p.rating))].sort((a, b) => b - a);
+    return [...new Set(searchedProducts.map((p) => p.rating))].sort(
+      (a, b) => b - a,
+    );
   }, [searchedProducts]);
 
   // Reset filters to defaults
@@ -180,7 +195,7 @@ const SearchResults = () => {
     const newParams = new URLSearchParams(searchParams);
     newParams.delete("q");
     setSearchParams(newParams);
-    navigate("/shop");
+    navigate("/");
   }, [searchParams, setSearchParams, navigate]);
 
   return (
@@ -190,7 +205,7 @@ const SearchResults = () => {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <Link to="/shop" className="btn-ghost text-sm mb-2 inline-flex">
+              <Link to="/" className="btn-ghost text-sm mb-2 inline-flex">
                 ← Back to Shop
               </Link>
               <h1 className="font-display text-3xl sm:text-4xl font-bold text-structural">
@@ -200,10 +215,17 @@ const SearchResults = () => {
             {query && (
               <div className="flex items-center gap-3">
                 <p className="text-structural/60 self-end sm:self-auto">
-                  {total} product{total !== 1 ? "s" : ""} found for &quot;{query}&quot;
+                  {total} product{total !== 1 ? "s" : ""} found for &quot;
+                  {query}&quot;
                 </p>
                 <Button variant="ghost" size="sm" onClick={handleClearSearch}>
-                  <svg className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    className="h-4 w-4 mr-1"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path d="M18 6L6 18M6 6l12 12" />
                   </svg>
                   Clear
@@ -221,25 +243,43 @@ const SearchResults = () => {
           <aside className="lg:col-span-1">
             <div className="sticky top-24 space-y-6">
               {/* Mobile Filter Toggle */}
-              <button className="btn-primary w-full lg:hidden justify-center gap-2" onClick={() => {}}>
-                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <button
+                className="btn-primary w-full lg:hidden justify-center gap-2"
+                onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
+              >
+                <svg
+                  className="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M3 7h18M3 12h18M3 17h18" />
                 </svg>
                 Filters
               </button>
 
-              <div className="space-y-6 border-t border-border pt-6 lg:pt-0">
+              <div
+                className={`space-y-6 border-t border-border pt-6 lg:pt-0 ${isMobileFilterOpen ? "block" : "hidden"} lg:block`}
+              >
                 {/* Category Filters */}
                 <div>
-                  <h3 className="font-semibold text-structural mb-3">Category</h3>
+                  <h3 className="font-semibold text-structural mb-3">
+                    Category
+                  </h3>
                   <div className="space-y-2">
                     {uniqueCategories.map((categoryId) => {
-                      const category = categories.find((c) => c.id === categoryId);
+                      const category = categories.find(
+                        (c) => c.id === categoryId,
+                      );
                       if (!category) return null;
 
                       const isChecked = filters.categories.has(categoryId);
                       return (
-                        <label key={categoryId} className="flex items-center cursor-pointer">
+                        <label
+                          key={categoryId}
+                          className="flex items-center cursor-pointer"
+                        >
                           <input
                             type="checkbox"
                             checked={isChecked}
@@ -250,7 +290,10 @@ const SearchResults = () => {
                               } else {
                                 newCategories.delete(categoryId);
                               }
-                              setFilters({ ...filters, categories: newCategories });
+                              setFilters({
+                                ...filters,
+                                categories: newCategories,
+                              });
                             }}
                             className="h-4 w-4 rounded border-border text-gradient-amber focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-background-elevated"
                           />
@@ -265,23 +308,60 @@ const SearchResults = () => {
 
                 {/* Price Range */}
                 <div>
-                  <h3 className="font-semibold text-structural mb-3">Price Range</h3>
+                  <h3 className="font-semibold text-structural mb-3">
+                    Price Range
+                  </h3>
                   <div className="space-y-3">
                     <div className="flex justify-between text-xs text-structural/60">
                       <span>&#x20A6;{priceRange.min.toLocaleString()}</span>
                       <span>&#x20A6;{priceRange.max.toLocaleString()}</span>
                     </div>
-                    <input
-                      type="range"
-                      min={priceRange.min}
-                      max={priceRange.max}
-                      value={[filters.minPrice, filters.maxPrice]}
-                      onChange={(e) => {
-                        const values = e.target.value.split(",").map(Number);
-                        setFilters({ ...filters, minPrice: values[0], maxPrice: values[1] });
-                      }}
-                      className="w-full h-2 bg-border rounded-full appearance-none cursor-pointer accent-amber-500"
-                    />
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-structural/60 w-16">
+                          Min
+                        </span>
+                        <input
+                          type="range"
+                          min={priceRange.min}
+                          max={priceRange.max}
+                          value={filters.minPrice}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value, 10);
+                            setFilters({
+                              ...filters,
+                              minPrice: Math.min(value, filters.maxPrice),
+                            });
+                          }}
+                          className="flex-1 h-2 bg-border rounded-full appearance-none cursor-pointer accent-amber-500"
+                        />
+                        <span className="text-sm text-structural/60 font-medium w-24 text-right">
+                          &#x20A6;{formatPrice(filters.minPrice)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-structural/60 w-16">
+                          Max
+                        </span>
+                        <input
+                          type="range"
+                          min={priceRange.min}
+                          max={priceRange.max}
+                          value={filters.maxPrice}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value, 10);
+                            setFilters({
+                              ...filters,
+                              maxPrice: Math.max(value, filters.minPrice),
+                            });
+                          }}
+                          className="flex-1 h-2 bg-border rounded-full appearance-none cursor-pointer accent-amber-500"
+                        />
+                        <span className="text-sm text-structural/60 font-medium w-24 text-right">
+                          &#x20A6;{formatPrice(filters.maxPrice)}
+                        </span>
+                      </div>
+                    </div>
                     <div className="flex justify-between text-sm text-structural/60 font-medium">
                       <span>&#x20A6;{formatPrice(filters.minPrice)}</span>
                       <span>&#x20A6;{formatPrice(filters.maxPrice)}</span>
@@ -296,7 +376,10 @@ const SearchResults = () => {
                     {uniqueRatings.map((rating) => {
                       const isChecked = filters.ratings.has(rating.toString());
                       return (
-                        <label key={rating} className="flex items-center cursor-pointer">
+                        <label
+                          key={rating}
+                          className="flex items-center cursor-pointer"
+                        >
                           <input
                             type="checkbox"
                             checked={isChecked}
@@ -313,11 +396,20 @@ const SearchResults = () => {
                           />
                           <span className="ml-3 text-sm text-structural/70 hover:text-structural transition-colors cursor-pointer flex items-center gap-1">
                             {[1, 2, 3, 4, 5].map((star) => (
-                              <span key={star} className={star <= rating ? "text-amber-500" : "text-border"}>
+                              <span
+                                key={star}
+                                className={
+                                  star <= rating
+                                    ? "text-amber-500"
+                                    : "text-border"
+                                }
+                              >
                                 ★
                               </span>
                             ))}
-                            <span>{rating} star{rating === 1 ? "" : "s"}</span>
+                            <span>
+                              {rating} star{rating === 1 ? "" : "s"}
+                            </span>
                           </span>
                         </label>
                       );
@@ -327,12 +419,16 @@ const SearchResults = () => {
 
                 {/* Availability */}
                 <div>
-                  <h3 className="font-semibold text-structural mb-3">Availability</h3>
+                  <h3 className="font-semibold text-structural mb-3">
+                    Availability
+                  </h3>
                   <label className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
                       checked={filters.inStock}
-                      onChange={(e) => setFilters({ ...filters, inStock: e.target.checked })}
+                      onChange={(e) =>
+                        setFilters({ ...filters, inStock: e.target.checked })
+                      }
                       className="h-4 w-4 rounded border-border text-gradient-amber focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-background-elevated"
                     />
                     <span className="ml-3 text-sm text-structural/70 hover:text-structural transition-colors cursor-pointer">
@@ -343,7 +439,11 @@ const SearchResults = () => {
 
                 {/* Reset Filters */}
                 <div className="border-t border-border pt-4">
-                  <ResetFilters onReset={handleResetFilters} variant="outline" className="w-full" />
+                  <ResetFilters
+                    onReset={handleResetFilters}
+                    variant="outline"
+                    className="w-full"
+                  />
                 </div>
               </div>
             </div>
@@ -353,7 +453,9 @@ const SearchResults = () => {
           <div className="lg:col-span-3">
             {/* Sort Bar */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 pb-4 border-b border-border">
-              <h2 className="font-semibold text-structural">{total} products</h2>
+              <h2 className="font-semibold text-structural">
+                {total} products
+              </h2>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-structural/60">Sort by:</span>
@@ -369,13 +471,35 @@ const SearchResults = () => {
                   </select>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="p-2" aria-label="Grid view">
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="p-2"
+                    aria-label="Grid view"
+                  >
+                    <svg
+                      className="h-5 w-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
                     </svg>
                   </Button>
-                  <Button variant="outline" size="sm" className="p-2" aria-label="List view">
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="p-2"
+                    aria-label="List view"
+                  >
+                    <svg
+                      className="h-5 w-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
                       <path d="M3 7h18M3 12h18M3 17h18" />
                     </svg>
                   </Button>
@@ -392,15 +516,28 @@ const SearchResults = () => {
               ) : (
                 <div className="col-span-full text-center py-16">
                   <div className="card-premium p-12 max-w-md mx-auto">
-                    <svg className="h-16 w-16 mx-auto text-border mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <svg
+                      className="h-16 w-16 mx-auto text-border mb-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    >
                       <circle cx="11" cy="11" r="8" />
                       <path d="M21 21l-4.35-4.35" />
                     </svg>
-                    <h3 className="text-xl font-semibold text-structural mb-2">No products found</h3>
+                    <h3 className="text-xl font-semibold text-structural mb-2">
+                      No products found
+                    </h3>
                     <p className="text-structural/60 mb-6">
-                      {query ? `No products match "${query}"` : "No products match your current filters"}
+                      {query
+                        ? `No products match "${query}"`
+                        : "No products match your current filters"}
                     </p>
-                    <ResetFilters onReset={handleResetFilters} variant="outline">
+                    <ResetFilters
+                      onReset={handleResetFilters}
+                      variant="outline"
+                    >
                       Clear Filters
                     </ResetFilters>
                   </div>

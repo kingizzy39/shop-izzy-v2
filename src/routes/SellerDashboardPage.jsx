@@ -1,10 +1,10 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   useSellerProfile,
   useSellerProducts,
   useSellerProductActions,
-  useClearSellerProfile
+  useClearSellerProfile,
 } from "../store/index";
 import Button from "../components/Button";
 import { formatPrice, generateId } from "../utils/format";
@@ -82,8 +82,14 @@ const SellerDashboardPage = () => {
   const clearSellerProfile = useClearSellerProfile();
 
   // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!sellerProfile) {
+      navigate("/seller/login");
+    }
+  }, [sellerProfile, navigate]);
+
+  // Render nothing while redirecting
   if (!sellerProfile) {
-    navigate("/seller/login");
     return null;
   }
 
@@ -445,7 +451,11 @@ const SellerDashboardPage = () => {
 
             {/* Tab Content */}
             {activeTab === "overview" && (
-              <OverviewTab stats={stats} sellerProfile={sellerProfile} />
+              <OverviewTab
+                stats={stats}
+                sellerProfile={sellerProfile}
+                setActiveTab={setActiveTab}
+              />
             )}
 
             {activeTab === "products" && (
@@ -481,7 +491,7 @@ const SellerDashboardPage = () => {
 };
 
 // Tab Components
-function OverviewTab({ stats, sellerProfile }) {
+function OverviewTab({ stats, sellerProfile, setActiveTab }) {
   return (
     <div className="space-y-8">
       {/* Stats Grid */}
@@ -549,7 +559,7 @@ function OverviewTab({ stats, sellerProfile }) {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Button
             variant="outline"
-            onClick={() => (window.location.hash = "#products")}
+            onClick={() => setActiveTab("products")}
             className="h-24 flex flex-col gap-2"
           >
             <ProductsIcon className="h-8 w-8 mx-auto" />
@@ -557,7 +567,7 @@ function OverviewTab({ stats, sellerProfile }) {
           </Button>
           <Button
             variant="primary"
-            onClick={() => (window.location.hash = "#addProduct")}
+            onClick={() => setActiveTab("addProduct")}
             className="h-24 flex flex-col gap-2"
           >
             <AddProductIcon className="h-8 w-8 mx-auto" />

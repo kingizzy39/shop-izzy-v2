@@ -1,6 +1,11 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCart, useProducts, useSellerProducts, useClearCart } from "../store/index";
+import {
+  useCart,
+  useProducts,
+  useSellerProducts,
+  useClearCart,
+} from "../store/index";
 import Button from "../components/Button";
 import ImageWithFallback from "../components/ImageWithFallback";
 import { formatPrice, generateId } from "../utils/format";
@@ -46,13 +51,12 @@ const Checkout = () => {
     [cart],
   );
 
-  // Redirect if cart is empty
-  if (cartItems.length === 0) {
-    React.useEffect(() => {
+  // Redirect if cart is empty - useEffect must be at top level
+  React.useEffect(() => {
+    if (cartItems.length === 0) {
       navigate("/cart");
-    }, [navigate]);
-    return null;
-  }
+    }
+  }, [cartItems, navigate]);
 
   // Form state
   const [activeStep, setActiveStep] = useState(1); // 1: Shipping, 2: Payment, 3: Review
@@ -149,7 +153,7 @@ const Checkout = () => {
     }
     if (
       shippingForm.phone &&
-      !/^(\+234|0)[789]\d{9}$/.test(shippingForm.phone)
+      !/^(\+234|0)[789]\d{9}$/.test(shippingForm.phone.replace(/[\s-]/g, ""))
     ) {
       newErrors.phone = "Invalid Nigerian phone number";
     }
@@ -1057,11 +1061,7 @@ const Checkout = () => {
                           className="flex items-center gap-3 p-3 bg-background-muted/50 rounded-lg"
                         >
                           <ImageWithFallback
-                            product={{
-                              keyword: item.product.keyword,
-                              lock: item.product.lock,
-                              cat: item.product.cat,
-                            }}
+                            product={item.product}
                             alt={item.product.name}
                             className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
                             loading="lazy"

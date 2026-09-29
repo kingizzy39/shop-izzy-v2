@@ -65,7 +65,7 @@ const Wishlist = () => {
               favorites!
             </p>
             <Link
-              to="/shop"
+              to="/"
               className="btn-primary inline-flex px-8 py-3.5 text-base"
             >
               Start Shopping
@@ -127,11 +127,7 @@ const Wishlist = () => {
                         aria-label={`View ${item.product.name}`}
                       >
                         <ImageWithFallback
-                          product={{
-                            keyword: item.product.keyword,
-                            lock: item.product.lock,
-                            cat: item.product.cat,
-                          }}
+                          product={item.product}
                           alt={item.product.name}
                           className="w-full h-full object-cover"
                           loading="lazy"
@@ -218,10 +214,7 @@ const Wishlist = () => {
               className="mt-6 animate-slide-up"
               style={{ animationDelay: "200ms" }}
             >
-              <Link
-                to="/shop"
-                className="btn-ghost inline-flex items-center gap-2"
-              >
+              <Link to="/" className="btn-ghost inline-flex items-center gap-2">
                 <svg
                   className="h-5 w-5"
                   viewBox="0 0 24 24"

@@ -1,6 +1,11 @@
 import React, { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAllProducts, useCart, useCartActions, useWishlistActions } from "../store/index";
+import {
+  useAllProducts,
+  useCart,
+  useCartActions,
+  useWishlistActions,
+} from "../store/index";
 import Button from "../components/Button";
 import ImageWithFallback from "../components/ImageWithFallback";
 import { formatPrice } from "../utils/format";
@@ -111,7 +116,7 @@ const Cart = () => {
                   Shopping Cart
                 </h1>
                 <p className="text-structural/60 mt-1">
-                  {itemCount} item{itemCount !== 1 ? "s" : ""} in your cart
+                  {itemCount} items in your cart
                 </p>
               </div>
               <Button
@@ -125,7 +130,9 @@ const Cart = () => {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
-                />
+                >
+                  <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
                 Clear Cart
               </Button>
             </div>
@@ -159,11 +166,7 @@ const Cart = () => {
                           aria-label={`View ${item.product.name}`}
                         >
                           <ImageWithFallback
-                            product={{
-                              keyword: item.product.keyword,
-                              lock: item.product.lock,
-                              cat: item.product.cat,
-                            }}
+                            product={item.product}
                             alt={item.product.name}
                             className="w-full h-full object-cover"
                             loading="lazy"
@@ -548,11 +551,7 @@ const Cart = () => {
                         className="flex items-center gap-3 p-3 rounded-lg bg-background-elevated border border-border hover:border-border-strong transition-colors group"
                       >
                         <ImageWithFallback
-                          product={{
-                            keyword: product.keyword,
-                            lock: product.lock,
-                            cat: product.cat,
-                          }}
+                          product={product}
                           alt={product.name}
                           className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
                           loading="lazy"

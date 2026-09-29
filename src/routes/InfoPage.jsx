@@ -219,7 +219,7 @@ const pageContent = {
 
 const InfoPage = () => {
   const location = useLocation();
-  const path = location.pathname.replace("/", "");
+  const path = location.pathname.split("/").filter(Boolean).pop() || "";
   const content = pageContent[path] || {
     title: "Page Not Found",
     description: "The page you're looking for doesn't exist or has been moved.",
@@ -249,7 +249,7 @@ const InfoPage = () => {
             {content.description}
           </p>
           <Link
-            to="/shop"
+            to="/"
             className="btn-primary inline-flex px-8 py-3.5 text-base"
           >
             Back to Shopping

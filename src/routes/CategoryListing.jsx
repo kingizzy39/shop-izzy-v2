@@ -46,15 +46,16 @@ const CategoryListing = () => {
     return Math.max(1, parseInt(searchParams.get("page")) || 1);
   });
 
+  // Mobile filter drawer state
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
   // Sync filters with URL when they change
   useEffect(() => {
-    const newParams = new URLSearchParams(searchParams);
+    const newParams = new URLSearchParams();
 
     // Categories
     if (filters.categories.size > 0) {
       filters.categories.forEach((cat) => newParams.append("category", cat));
-    } else {
-      newParams.delete("category");
     }
 
     // Price
@@ -64,8 +65,6 @@ const CategoryListing = () => {
     // Ratings
     if (filters.ratings.size > 0) {
       filters.ratings.forEach((rating) => newParams.append("rating", rating));
-    } else {
-      newParams.delete("rating");
     }
 
     // In stock
@@ -79,25 +78,42 @@ const CategoryListing = () => {
 
     setSearchParams(newParams);
     setPage(1);
-  }, [filters, sort, searchParams, setSearchParams]);
+  }, [filters, sort, setSearchParams]);
 
   // Prepare filters for pagination
   const paginationFilters = useMemo(
     () => ({
-      category: categoryParam || (filters.categories.size === 1 ? Array.from(filters.categories)[0] : undefined),
+      category:
+        categoryParam ||
+        (filters.categories.size === 1
+          ? Array.from(filters.categories)[0]
+          : undefined),
       minPrice: filters.minPrice,
       maxPrice: filters.maxPrice,
-      minRating: filters.ratings.size > 0 ? Math.min(...Array.from(filters.ratings).map(Number)) : undefined,
+      minRating:
+        filters.ratings.size > 0
+          ? Math.min(...Array.from(filters.ratings).map(Number))
+          : undefined,
       sort,
     }),
-    [categoryParam, filters, sort]
+    [categoryParam, filters, sort],
   );
 
   // Get paginated products
-  const { products: paginatedProducts, total, totalPages } = useMemo(
+  const {
+    products: paginatedProducts,
+    total,
+    totalPages,
+  } = useMemo(
     () =>
-      getProductsPaginated(products, categoryParam, page, PRODUCTS_PER_PAGE, paginationFilters),
-    [products, categoryParam, page, paginationFilters]
+      getProductsPaginated(
+        products,
+        categoryParam,
+        page,
+        PRODUCTS_PER_PAGE,
+        paginationFilters,
+      ),
+    [products, categoryParam, page, paginationFilters],
   );
 
   // Sort products
@@ -208,7 +224,9 @@ const CategoryListing = () => {
               </h1>
             </div>
             <p className="text-structural/60 self-end sm:self-auto">
-              Showing {Math.min((page - 1) * PRODUCTS_PER_PAGE + 1, total)}–{Math.min(page * PRODUCTS_PER_PAGE, total)} of {total} product{total !== 1 ? "s" : ""}
+              Showing {Math.min((page - 1) * PRODUCTS_PER_PAGE + 1, total)}–
+              {Math.min(page * PRODUCTS_PER_PAGE, total)} of {total} product
+              {total !== 1 ? "s" : ""}
             </p>
           </div>
         </div>
@@ -223,7 +241,7 @@ const CategoryListing = () => {
               {/* Mobile Filter Toggle */}
               <button
                 className="btn-primary w-full lg:hidden justify-center gap-2"
-                onClick={() => {}}
+                onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
               >
                 <svg
                   className="h-5 w-5"
@@ -237,7 +255,9 @@ const CategoryListing = () => {
                 Filters
               </button>
 
-              <div className="space-y-6 border-t border-border pt-6 lg:pt-0">
+              <div
+                className={`space-y-6 border-t border-border pt-6 lg:pt-0 ${isMobileFilterOpen ? "block" : "hidden"} lg:block`}
+              >
                 {/* Category Filters */}
                 <div>
                   <h3 className="font-semibold text-structural mb-3">
@@ -292,21 +312,52 @@ const CategoryListing = () => {
                       <span>&#x20A6;{priceRange.min.toLocaleString()}</span>
                       <span>&#x20A6;{priceRange.max.toLocaleString()}</span>
                     </div>
-                    <input
-                      type="range"
-                      min={priceRange.min}
-                      max={priceRange.max}
-                      value={[filters.minPrice, filters.maxPrice]}
-                      onChange={(e) => {
-                        const values = e.target.value.split(",").map(Number);
-                        setFilters({
-                          ...filters,
-                          minPrice: values[0],
-                          maxPrice: values[1],
-                        });
-                      }}
-                      className="w-full h-2 bg-border rounded-full appearance-none cursor-pointer accent-amber-500"
-                    />
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-structural/60 w-16">
+                          Min
+                        </span>
+                        <input
+                          type="range"
+                          min={priceRange.min}
+                          max={priceRange.max}
+                          value={filters.minPrice}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value, 10);
+                            setFilters({
+                              ...filters,
+                              minPrice: Math.min(value, filters.maxPrice),
+                            });
+                          }}
+                          className="flex-1 h-2 bg-border rounded-full appearance-none cursor-pointer accent-amber-500"
+                        />
+                        <span className="text-sm text-structural/60 font-medium w-24 text-right">
+                          &#x20A6;{formatPrice(filters.minPrice)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-structural/60 w-16">
+                          Max
+                        </span>
+                        <input
+                          type="range"
+                          min={priceRange.min}
+                          max={priceRange.max}
+                          value={filters.maxPrice}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value, 10);
+                            setFilters({
+                              ...filters,
+                              maxPrice: Math.max(value, filters.minPrice),
+                            });
+                          }}
+                          className="flex-1 h-2 bg-border rounded-full appearance-none cursor-pointer accent-amber-500"
+                        />
+                        <span className="text-sm text-structural/60 font-medium w-24 text-right">
+                          &#x20A6;{formatPrice(filters.maxPrice)}
+                        </span>
+                      </div>
+                    </div>
                     <div className="flex justify-between text-sm text-structural/60 font-medium">
                       <span>&#x20A6;{formatPrice(filters.minPrice)}</span>
                       <span>&#x20A6;{formatPrice(filters.maxPrice)}</span>

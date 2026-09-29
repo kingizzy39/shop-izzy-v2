@@ -49,11 +49,13 @@ const SellerJoinPage = () => {
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
           return "Please enter a valid email address";
         return "";
-      case "phone":
+      case "phone": {
         if (!value.trim()) return "Phone number is required";
-        if (!nigerianPhoneRegex.test(value))
+        const cleanPhone = value.replace(/[\s-]/g, "");
+        if (!nigerianPhoneRegex.test(cleanPhone))
           return "Please enter a valid Nigerian phone number (e.g., +2348012345678 or 08012345678)";
         return "";
+      }
       case "password":
         if (!value) return "Password is required";
         if (value.length < 8) return "Password must be at least 8 characters";
@@ -582,11 +584,14 @@ const SellerJoinPage = () => {
             <p className="text-xs text-structural/50">
               Your data is protected with bank-grade encryption. By signing up,
               you agree to our{" "}
-              <Link href="#" className="text-gradient-amber hover:underline">
+              <Link to="/terms" className="text-gradient-amber hover:underline">
                 Terms of Service
               </Link>{" "}
               and{" "}
-              <Link href="#" className="text-gradient-amber hover:underline">
+              <Link
+                to="/privacy"
+                className="text-gradient-amber hover:underline"
+              >
                 Privacy Policy
               </Link>
               .

@@ -140,7 +140,7 @@ const ProductDetail = () => {
       ];
       locks.forEach((lock) => {
         images.push(
-          `https://loremflickr.com/200/200/${product.keyword}/all?lock=${lock}`,
+          `https://picsum.photos/seed/${product.keyword}-${lock}/200/200`,
         );
       });
     }
@@ -262,7 +262,7 @@ const ProductDetail = () => {
                 product={{
                   id: product.id,
                   keyword: product.keyword,
-                  lock: product.lock,
+                  lock: product.lock + activeThumbnail * 10,
                   cat: product.cat,
                   img: product.img,
                 }}
@@ -862,16 +862,12 @@ const ProductDetail = () => {
                         <Button
                           onClick={() => setShowReviewForm(false)}
                           variant="ghost"
+                          type="button"
                         >
                           Cancel
                         </Button>
                         <Button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleSubmitReview(
-                              new Event("submit") as unknown as React.FormEvent,
-                            );
-                          }}
+                          type="submit"
                           variant="primary"
                           disabled={
                             reviewRating === 0 || reviewComment.trim() === ""
