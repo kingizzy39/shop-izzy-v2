@@ -32,7 +32,7 @@ const AuthPage = () => {
   // Redirect if already authenticated as shopper (use useEffect to avoid blank page during render)
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/shop", { replace: true });
+      navigate("/", { replace: true });
     }
   }, [isAuthenticated, navigate]);
 
@@ -53,7 +53,8 @@ const AuthPage = () => {
       case "name":
         if (!isLogin) {
           if (!value.trim()) return "Full name is required";
-          if (value.trim().length < 2) return "Name must be at least 2 characters";
+          if (value.trim().length < 2)
+            return "Name must be at least 2 characters";
         }
         return "";
       case "email":
@@ -126,7 +127,9 @@ const AuthPage = () => {
 
       if (isLogin) {
         // Sign in: find user with matching email and password
-        const user = users.find((u) => u.email === email && u.password === formData.password);
+        const user = users.find(
+          (u) => u.email === email && u.password === formData.password,
+        );
 
         if (!user) {
           setSubmitError("Invalid email or password. Please try again.");
@@ -139,7 +142,9 @@ const AuthPage = () => {
         const TOKEN_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
         const token = {
           type: "shopper",
-          userId: user.userId || `shopper_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+          userId:
+            user.userId ||
+            `shopper_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
           email: user.email,
           name: user.name,
           issuedAt: now,
@@ -153,7 +158,9 @@ const AuthPage = () => {
         const existingUser = users.find((u) => u.email === email);
 
         if (existingUser) {
-          setSubmitError("An account with this email already exists. Please sign in instead.");
+          setSubmitError(
+            "An account with this email already exists. Please sign in instead.",
+          );
           setIsLoading(false);
           return;
         }
@@ -186,8 +193,8 @@ const AuthPage = () => {
         setUser({ name: newUser.name, email: newUser.email });
       }
 
-      // Redirect to intended destination or /shop
-      const from = location.state?.from?.pathname || "/shop";
+      // Redirect to intended destination or /
+      const from = location.state?.from?.pathname || "/";
       navigate(from, { replace: true });
     } catch {
       setSubmitError("Something went wrong. Please try again.");
@@ -256,7 +263,10 @@ const AuthPage = () => {
 
           {/* Mode Toggle */}
           <div className="mb-6">
-            <div className="flex bg-background-elevated rounded-lg p-1" role="tablist">
+            <div
+              className="flex bg-background-elevated rounded-lg p-1"
+              role="tablist"
+            >
               <button
                 role="tab"
                 aria-selected={!isLogin}
@@ -509,7 +519,9 @@ const AuthPage = () => {
                     disabled={isLoading}
                     aria-invalid={errors.confirmPassword ? "true" : "false"}
                     aria-describedby={
-                      errors.confirmPassword ? "confirmPassword-error" : undefined
+                      errors.confirmPassword
+                        ? "confirmPassword-error"
+                        : undefined
                     }
                   />
                 </div>
@@ -533,12 +545,17 @@ const AuthPage = () => {
                     type="checkbox"
                     checked={formData.rememberMe}
                     onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, rememberMe: e.target.checked }))
+                      setFormData((prev) => ({
+                        ...prev,
+                        rememberMe: e.target.checked,
+                      }))
                     }
                     className="w-4 h-4 rounded border-border text-gradient-amber focus:ring-amber-500"
                     disabled={isLoading}
                   />
-                  <span className="text-sm text-structural/70">Remember me</span>
+                  <span className="text-sm text-structural/70">
+                    Remember me
+                  </span>
                 </label>
               </div>
             )}
@@ -570,8 +587,10 @@ const AuthPage = () => {
                   </svg>
                   {isLogin ? "Signing in..." : "Creating Account..."}
                 </>
+              ) : isLogin ? (
+                "Sign In"
               ) : (
-                isLogin ? "Sign In" : "Create Account"
+                "Create Account"
               )}
             </Button>
           </form>
@@ -647,8 +666,8 @@ const AuthPage = () => {
           {/* Security Notice */}
           <div className="mt-8 text-center">
             <p className="text-xs text-structural/50">
-              Your data is protected with bank-grade encryption. By {isLogin ? "signing in" : "signing up"},
-              you agree to our{" "}
+              Your data is protected with bank-grade encryption. By{" "}
+              {isLogin ? "signing in" : "signing up"}, you agree to our{" "}
               <Link href="#" className="text-gradient-amber hover:underline">
                 Terms of Service
               </Link>{" "}

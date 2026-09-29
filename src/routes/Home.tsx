@@ -1,10 +1,6 @@
 import React, { useMemo, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  useStore,
-  useAllProducts,
-  useIsShopperAuthenticated,
-} from "../store/index";
+import { useStore, useAllProducts } from "../store/index";
 import type { Product } from "../data";
 import ProductCard from "../components/ProductCard";
 import ErrorBoundary from "../components/ErrorBoundary";
@@ -16,7 +12,6 @@ const safeArray = <T,>(arr: T[] | null | undefined): T[] =>
 const HomeContent = () => {
   const { categories, sellerProducts, hasHydrated } = useStore();
   const allProducts = useAllProducts();
-  const isAuthenticated = useIsShopperAuthenticated();
   const [isReady, setIsReady] = useState(false);
 
   // Ensure allProducts is always an array
@@ -42,35 +37,8 @@ const HomeContent = () => {
     );
   }
 
-  // This should not happen due to ProtectedRouteShopper, but safety check
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-4">
-        <div className="card-premium p-8 text-center max-w-md w-full animate-fade-in">
-          <svg
-            className="h-16 w-16 mx-auto text-rose-500 mb-4"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <line x1="15" y1="9" x2="9" y2="15" />
-            <line x1="9" y1="9" x2="15" y2="15" />
-          </svg>
-          <h1 className="font-display text-2xl font-bold text-structural mb-3">
-            Authentication Required
-          </h1>
-          <p className="text-structural/60 mb-6">
-            Please sign in to access the shop.
-          </p>
-          <Link to="/login" className="btn-primary inline-block">
-            Sign In
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  // Auth is handled by ProtectedRouteShopper wrapper in App.tsx
+  // No additional guard needed here - component renders after auth check
 
   // Featured product sets (for demo, we'll use some products from each category)
   const featuredThisWeeksEdit = useMemo(() => products.slice(0, 4), [products]);

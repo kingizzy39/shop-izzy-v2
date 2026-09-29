@@ -82,7 +82,8 @@ const TiltCard = ({ product }) => {
     setIsHovered(true);
   };
 
-  const productImg = `https://loremflickr.com/400/400/${product.keyword}/all?lock=${product.lock}`;
+  // Use product.img (from data.ts) which provides reliable product images
+  const productImg = product.img;
 
   return (
     <div
@@ -662,7 +663,10 @@ const LandingPage = () => {
                   className="card-premium p-6 group-hover:border-border-strong transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <FeatureIcon icon={feature.icon} className="mb-4 group-hover:scale-110 transition-transform duration-300" />
+                  <FeatureIcon
+                    icon={feature.icon}
+                    className="mb-4 group-hover:scale-110 transition-transform duration-300"
+                  />
                   <h3 className="font-display text-xl font-bold text-structural mb-2">
                     {feature.title}
                   </h3>
@@ -822,7 +826,8 @@ const LandingPage = () => {
                 Loved by Shoppers
               </span>
               <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-structural mb-4">
-                Don&apos;t just take our word<br />
+                Don&apos;t just take our word
+                <br />
                 <span className="text-gradient-amber">for it.</span>
               </h2>
               <p className="text-lg text-structural/60 max-w-2xl mx-auto">
@@ -836,21 +841,24 @@ const LandingPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 {
-                  quote: "The quality is genuinely impressive. I ordered a blazer and the fabric, stitching, and fit were exactly as described. Finally, a store that doesn't use misleading photos.",
+                  quote:
+                    "The quality is genuinely impressive. I ordered a blazer and the fabric, stitching, and fit were exactly as described. Finally, a store that doesn't use misleading photos.",
                   author: "Adebayo K.",
                   location: "Lagos",
                   rating: 5,
                   product: "Linen-Blend Tailored Blazer",
                 },
                 {
-                  quote: "Free shipping over ₦50K is a game changer. I furnished my entire apartment and saved thousands on delivery. The price match guarantee gave me total confidence.",
+                  quote:
+                    "Free shipping over ₦50K is a game changer. I furnished my entire apartment and saved thousands on delivery. The price match guarantee gave me total confidence.",
                   author: "Chioma N.",
                   location: "Abuja",
                   rating: 5,
                   product: "Home Essentials Bundle",
                 },
                 {
-                  quote: "My mechanical keyboard arrived in perfect condition with custom packaging. The tracking was accurate down to the hour. This is how e-commerce should work everywhere.",
+                  quote:
+                    "My mechanical keyboard arrived in perfect condition with custom packaging. The tracking was accurate down to the hour. This is how e-commerce should work everywhere.",
                   author: "Tunde M.",
                   location: "Port Harcourt",
                   rating: 5,
@@ -859,11 +867,18 @@ const LandingPage = () => {
               ].map((testimonial, index) => (
                 <ScrollReveal key={index} delay={index * 150} direction="up">
                   <div className="card-premium p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full">
-                    <div className="flex items-center gap-1 mb-4" aria-label={`${testimonial.rating} out of 5 stars`}>
+                    <div
+                      className="flex items-center gap-1 mb-4"
+                      aria-label={`${testimonial.rating} out of 5 stars`}
+                    >
                       {[1, 2, 3, 4, 5].map((star) => (
                         <span
                           key={star}
-                          className={star <= testimonial.rating ? "text-amber-500" : "text-border"}
+                          className={
+                            star <= testimonial.rating
+                              ? "text-amber-500"
+                              : "text-border"
+                          }
                         >
                           ★
                         </span>
@@ -873,9 +888,15 @@ const LandingPage = () => {
                       &ldquo;{testimonial.quote}&rdquo;
                     </blockquote>
                     <div className="border-t border-border pt-4">
-                      <p className="font-medium text-structural">{testimonial.author}</p>
-                      <p className="text-structural/50 text-sm">{testimonial.location}</p>
-                      <p className="text-gradient-amber text-xs mt-1 font-medium">{testimonial.product}</p>
+                      <p className="font-medium text-structural">
+                        {testimonial.author}
+                      </p>
+                      <p className="text-structural/50 text-sm">
+                        {testimonial.location}
+                      </p>
+                      <p className="text-gradient-amber text-xs mt-1 font-medium">
+                        {testimonial.product}
+                      </p>
                     </div>
                   </div>
                 </ScrollReveal>
