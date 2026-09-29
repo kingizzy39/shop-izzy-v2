@@ -18,6 +18,9 @@ export type Product = {
   lock: number;
   desc: string;
   img?: string;
+  // Seller-specific fields (for seller products)
+  sellerId?: string;
+  bio?: string;
 };
 
 export const CATEGORIES: Category[] = [
@@ -712,7 +715,7 @@ export type ProductFilters = {
   maxPrice?: number;
   minRating?: number;
   inStock?: boolean;
-  sort?: 'relevance' | 'price-asc' | 'price-desc' | 'rating';
+  sort?: "relevance" | "price-asc" | "price-desc" | "rating";
 };
 
 /**
@@ -723,7 +726,7 @@ export function getProductsPaginated(
   category: string | null,
   page: number,
   perPage: number,
-  filters: ProductFilters = {}
+  filters: ProductFilters = {},
 ): { products: Product[]; total: number; totalPages: number } {
   let filtered = products;
 
@@ -754,16 +757,16 @@ export function getProductsPaginated(
 
   // Apply sorting
   switch (filters.sort) {
-    case 'price-asc':
+    case "price-asc":
       filtered.sort((a, b) => a.price - b.price);
       break;
-    case 'price-desc':
+    case "price-desc":
       filtered.sort((a, b) => b.price - a.price);
       break;
-    case 'rating':
+    case "rating":
       filtered.sort((a, b) => b.rating - a.rating);
       break;
-    case 'relevance':
+    case "relevance":
     default:
       filtered.sort((a, b) => {
         if (b.rating !== a.rating) return b.rating - a.rating;
@@ -787,7 +790,7 @@ export function getProductsPaginated(
 export function searchProducts(
   products: typeof PRODUCTS,
   query: string,
-  filters: ProductFilters = {}
+  filters: ProductFilters = {},
 ): Product[] {
   if (!query.trim()) return products;
 

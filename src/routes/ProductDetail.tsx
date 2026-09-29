@@ -100,7 +100,7 @@ const ProductDetail = () => {
   };
 
   // Handle adding a review
-  const handleSubmitReview = (e) => {
+  const handleSubmitReview = (e: React.FormEvent) => {
     e.preventDefault();
     if (reviewRating > 0 && reviewComment.trim() !== "") {
       const newReview = {
@@ -853,7 +853,7 @@ const ProductDetail = () => {
                           onChange={(e) => setReviewComment(e.target.value)}
                           placeholder="Share your experience with this product..."
                           className="input-premium min-h-[100px] resize-y"
-                          rows="4"
+                          rows={4}
                           required
                         />
                       </div>
@@ -866,7 +866,12 @@ const ProductDetail = () => {
                           Cancel
                         </Button>
                         <Button
-                          onClick={handleSubmitReview}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleSubmitReview(
+                              new Event("submit") as unknown as React.FormEvent,
+                            );
+                          }}
                           variant="primary"
                           disabled={
                             reviewRating === 0 || reviewComment.trim() === ""
